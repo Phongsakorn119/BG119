@@ -1,0 +1,7 @@
+install microgear with command in raspberry pi
+
+Set your sensor
+
+LED 1 connect pin 23
+
+pir sensor connect pin 27
