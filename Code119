@@ -1,0 +1,30 @@
+import sys
+import time
+import requests
+import Adafruit_DHT
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.cleanup()
+GPIO.setwarnings(False)
+GPIO.setup(23,GPIO.OUT)
+while True:
+  print("sensor read")
+  humidity, temperature = Adafruit_DHT.read_retry(22, 27)
+  if humidity is not None and temperature is not None:
+    print ('Temp={0:0.1f}*C Humidity={1:0.1f}%'.format(temperature, humidity))
+    if temperature >=25 :
+      GPIO.output(23, GPIO.HIGH)
+    elif temperature <25 :
+      GPIO.output(23, GPIO.LOW)
+  else:
+    print('Failed to get reading. Try again!')
+    GPIO.output(23, GPIO.LOW)
+
+  url = 'https://notify-api.line.me/api/notify'
+  token = '5HRmrqutf4umEuGYMyk4C69wlz3or3d7xTdAmISJQCw'
+  headers = {'content-type':'application/x-www-form-urlencoded','Authorization':'Bearer '+token}
+
+  msg = ('Today Temp={0:0.1f}*C Humidity={1:0.1f}%'.format(temperature, humidity))
+  r = requests.post(url, headers=headers, data = {'message':msg})
+  print(r.text)
+  time.sleep(60)
